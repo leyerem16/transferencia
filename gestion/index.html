@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestión del Conocimiento</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── VARIABLES ─── */
+    :root {
+      --bg: #f4f3ef;
+      --surface: #ffffff;
+      --surface2: #edecea;
+      --text: #1a1a1a;
+      --text-muted: #6b6b6b;
+      --accent: #1a56db;
+      --accent2: #0e3a9e;
+      --accent-warm: #e05c2a;
+      --border: #ddd;
+      --nav-bg: #0f0f0f;
+      --card-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      --radius: 16px;
+      --nav-h: 64px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f0f10;
+      --surface: #1a1a1d;
+      --surface2: #242428;
+      --text: #f0efea;
+      --text-muted: #9a9a9a;
+      --accent: #4d7fff;
+      --accent2: #2b5ce6;
+      --accent-warm: #f07a50;
+      --border: #2e2e32;
+      --nav-bg: #08080a;
+      --card-shadow: 0 2px 16px rgba(0,0,0,0.4);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      transition: background-color 0.3s, color 0.3s;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--nav-bg);
+      height: var(--nav-h);
+      display: flex; align-items: center;
+      padding: 0 clamp(1rem, 4vw, 2rem);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-brand {
+      font-family: 'DM Serif Display', serif;
+      color: #fff; font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+      text-decoration: none; letter-spacing: -0.02em;
+      flex-shrink: 0; margin-right: auto;
+    }
+    .nav-links {
+      display: flex; gap: 0.25rem; align-items: center;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.65); text-decoration: none;
+      font-size: 0.85rem; padding: 6px 14px; border-radius: 8px;
+      transition: all 0.2s; font-weight: 400; white-space: nowrap;
+    }
+    .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+
+    .theme-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; padding: 6px 12px; border-radius: 8px;
+      cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+      margin-left: 8px; flex-shrink: 0;
+    }
+    .theme-btn:hover { background: rgba(255,255,255,0.18); }
+
+    .hamburger {
+      display: none; background: none; border: none;
+      color: #fff; font-size: 1.5rem; cursor: pointer;
+      padding: 4px 8px; margin-left: 12px; line-height: 1;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      .nav-links {
+        display: none; flex-direction: column;
+        position: fixed; top: var(--nav-h); left: 0; right: 0;
+        background: var(--nav-bg);
+        padding: 0.75rem 1rem 1.25rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        gap: 0.15rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { font-size: 1rem; padding: 11px 16px; }
+      .theme-btn { width: 100%; text-align: left; margin: 6px 0 0; font-size: 0.95rem; padding: 10px 16px; }
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: clamp(480px, 88vh, 900px);
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; position: relative; overflow: hidden;
+      background: var(--nav-bg);
+      padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 5vw, 2rem);
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 20% 50%, rgba(26,86,219,0.25) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 80% 30%, rgba(224,92,42,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 760px; width: 100%; }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(26,86,219,0.2);
+      border: 1px solid rgba(26,86,219,0.4);
+      color: #7aa8ff;
+      padding: 4px 16px; border-radius: 50px;
+      font-size: clamp(0.7rem, 1.8vw, 0.78rem);
+      font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 8vw, 5rem);
+      color: #fff; line-height: 1.1;
+      letter-spacing: -0.03em; margin-bottom: 1.2rem;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+    .hero h1 span { color: var(--accent-warm); }
+    .hero p {
+      color: rgba(255,255,255,0.6);
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      font-weight: 300; max-width: 520px;
+      margin: 0 auto 2.5rem;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+    .hero-cta {
+      display: flex; gap: 0.875rem;
+      flex-wrap: wrap; justify-content: center;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+    .btn-primary-custom {
+      background: var(--accent); color: #fff;
+      padding: clamp(10px, 2vw, 12px) clamp(20px, 4vw, 28px);
+      border-radius: 10px; text-decoration: none;
+      font-weight: 600; font-size: clamp(0.82rem, 2vw, 0.9rem);
+      border: none; cursor: pointer; transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-primary-custom:hover { background: var(--accent2); transform: translateY(-2px); color: #fff; }
+    .btn-ghost {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.8);
+      padding: clamp(10px, 2vw, 12px) clamp(20px, 4vw, 28px);
+      border-radius: 10px; text-decoration: none;
+      font-weight: 500; font-size: clamp(0.82rem, 2vw, 0.9rem);
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTIONS ─── */
+    .section { padding: clamp(3rem, 6vw, 5rem) 0; }
+    .section-alt { background: var(--surface2); }
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 1.5rem); }
+
+    .section-header { text-align: center; margin-bottom: clamp(2rem, 5vw, 3.5rem); }
+    .section-label {
+      display: inline-block; font-size: 0.72rem;
+      font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem;
+    }
+    .section-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.5rem, 4vw, 2.6rem);
+      color: var(--text); letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .section-header p {
+      color: var(--text-muted);
+      max-width: 560px; margin: 0.75rem auto 0;
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
+    }
+
+    /* ─── INFO CARDS (MEJORADAS) ─── */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(0.875rem, 2vw, 1.5rem);
+      margin-bottom: clamp(1rem, 3vw, 1.5rem);
+    }
+    @media (max-width: 560px) { .intro-grid { grid-template-columns: 1fr; } }
+
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(1.1rem, 3vw, 1.75rem);
+      box-shadow: var(--card-shadow);
+      transition: transform 0.25s, box-shadow 0.25s;
+      display: flex;
+      flex-direction: column;
+    }
+    .info-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.12); }
+
+    .info-card-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin-bottom: 1rem; flex-shrink: 0;
+    }
+    .icon-blue   { background: rgba(26,86,219,0.1);  color: var(--accent); }
+    .icon-orange { background: rgba(224,92,42,0.1);  color: var(--accent-warm); }
+    .icon-green  { background: rgba(22,163,74,0.1);  color: #16a34a; }
+    .icon-purple { background: rgba(124,58,237,0.1); color: #7c3aed; }
+
+    .info-card h4 { font-size: clamp(0.9rem, 2vw, 1rem); font-weight: 700; margin-bottom: 0.4rem; color: var(--text); }
+    .info-card > p { font-size: clamp(0.8rem, 1.8vw, 0.875rem); color: var(--text-muted); line-height: 1.6; margin-bottom: 0.85rem; }
+
+    /* ── Características (viñetas) ── */
+    .card-features {
+      list-style: none;
+      margin: 0 0 1rem 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .card-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      font-size: clamp(0.76rem, 1.7vw, 0.82rem);
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .card-features li .feat-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      flex-shrink: 0; margin-top: 0.42em;
+    }
+    .dot-blue   { background: var(--accent); }
+    .dot-orange { background: var(--accent-warm); }
+    .dot-green  { background: #16a34a; }
+    .dot-purple { background: #7c3aed; }
+
+    /* ── Divider ── */
+    .card-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0.75rem 0;
+    }
+
+    /* ── Botón Ver más ── */
+    .btn-ver-mas {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 6px 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: gap 0.2s, opacity 0.2s;
+      font-family: 'Sora', sans-serif;
+    }
+    .btn-ver-mas-blue   { color: var(--accent); }
+    .btn-ver-mas-orange { color: var(--accent-warm); }
+    .btn-ver-mas-green  { color: #16a34a; }
+    .btn-ver-mas-purple { color: #7c3aed; }
+    .btn-ver-mas:hover { gap: 0.7rem; opacity: 0.8; }
+    .btn-ver-mas .arrow { font-style: normal; transition: transform 0.25s; }
+    .btn-ver-mas.open .arrow { transform: rotate(90deg); }
+
+    /* ── Panel expandible ── */
+    .expand-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+    .expand-panel.open {
+      max-height: 600px;
+      opacity: 1;
+    }
+    .expand-inner {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      margin-top: 0.75rem;
+    }
+    .expand-inner h5 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .expand-inner p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 0.75rem;
+    }
+    .expand-inner p:last-child { margin-bottom: 0; }
+    .expand-example {
+      background: var(--surface);
+      border-left: 3px solid;
+      border-radius: 0 8px 8px 0;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-top: 0.5rem;
+    }
+    .expand-example strong {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .border-blue   { border-color: var(--accent); }
+    .border-orange { border-color: var(--accent-warm); }
+    .border-green  { border-color: #16a34a; }
+    .border-purple { border-color: #7c3aed; }
+    .txt-blue   { color: var(--accent); }
+    .txt-orange { color: var(--accent-warm); }
+    .txt-green  { color: #16a34a; }
+    .txt-purple { color: #7c3aed; }
+
+    /* ─── VIDEO BLOCK ─── */
+    .videos-block { margin-top: clamp(1.5rem, 4vw, 2.5rem); }
+    .videos-block-header {
+      display: flex; align-items: center; gap: 0.6rem;
+      margin-bottom: 1.25rem; flex-wrap: wrap;
+    }
+    .videos-block-header .vb-label {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+    }
+    .videos-block-header::after { content: ''; flex: 1; height: 1px; background: var(--border); min-width: 20px; }
+
+    .yt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+      gap: clamp(0.875rem, 2vw, 1.25rem);
+    }
+
+    .yt-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden; box-shadow: var(--card-shadow);
+      transition: transform 0.22s, box-shadow 0.22s;
+    }
+    .yt-item:not(.playing-card):hover { transform: translateY(-5px); box-shadow: 0 10px 32px rgba(0,0,0,0.14); }
+
+    .yt-thumb {
+      position: relative; width: 100%; padding-bottom: 56.25%;
+      background: #111; overflow: hidden;
+    }
+    .yt-thumb img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; transition: transform 0.3s; cursor: pointer;
+    }
+    .yt-item:not(.playing-card):hover .yt-thumb img { transform: scale(1.04); }
+
+    .yt-play {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.35); transition: background 0.2s; cursor: pointer;
+    }
+    .yt-item:not(.playing-card):hover .yt-play { background: rgba(0,0,0,0.15); }
+    .yt-play-btn {
+      width: clamp(44px, 8vw, 56px); height: clamp(44px, 8vw, 56px);
+      background: rgba(255,255,255,0.95); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: clamp(1.1rem, 3vw, 1.4rem); color: #e00;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3); transition: transform 0.2s;
+    }
+    .yt-item:not(.playing-card):hover .yt-play-btn { transform: scale(1.12); }
+
+    .yt-thumb iframe {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      border: none; display: none;
+    }
+    .yt-thumb.playing > img,
+    .yt-thumb.playing > .yt-play { display: none !important; }
+    .yt-thumb.playing > iframe    { display: block !important; }
+
+    .yt-info { padding: clamp(0.75rem, 2vw, 1rem) clamp(0.875rem, 2vw, 1.1rem) clamp(0.875rem, 2vw, 1.2rem); }
+    .yt-badge {
+      display: inline-block; font-size: 0.67rem; font-weight: 700;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 2px 9px; border-radius: 50px; margin-bottom: 0.45rem;
+    }
+    .badge-blue   { background: rgba(26,86,219,0.1);  color: var(--accent); }
+    .badge-green  { background: rgba(22,163,74,0.1);  color: #16a34a; }
+    .badge-orange { background: rgba(224,92,42,0.1);  color: var(--accent-warm); }
+    .badge-purple { background: rgba(124,58,237,0.1); color: #7c3aed; }
+    .yt-title { font-size: clamp(0.8rem, 2vw, 0.875rem); font-weight: 700; color: var(--text); margin-bottom: 0.3rem; line-height: 1.35; }
+    .yt-desc  { font-size: clamp(0.74rem, 1.6vw, 0.78rem); color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+    /* ─── TIPOS ─── */
+    .tipos-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(0.875rem, 2vw, 1.5rem);
+    }
+    @media (max-width: 520px) { .tipos-grid { grid-template-columns: 1fr; } }
+
+    .tipo-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(1.25rem, 4vw, 2rem);
+      text-align: center; box-shadow: var(--card-shadow);
+      transition: transform 0.25s;
+    }
+    .tipo-card:hover { transform: translateY(-4px); }
+    .tipo-card .big-icon { font-size: clamp(2rem, 5vw, 2.5rem); margin-bottom: 1rem; }
+    .tipo-card h3 { font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
+    .tipo-card p  { font-size: clamp(0.8rem, 1.8vw, 0.875rem); color: var(--text-muted); }
+    .tipo-card .tag { display: inline-block; padding: 3px 12px; border-radius: 50px; font-size: 0.72rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .tag-blue   { background: rgba(26,86,219,0.1); color: var(--accent); }
+    .tag-orange { background: rgba(224,92,42,0.1); color: var(--accent-warm); }
+
+    /* ─── SECI ─── */
+    .seci-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(0.875rem, 2vw, 1.25rem);
+    }
+    @media (max-width: 520px) { .seci-grid { grid-template-columns: 1fr; } }
+
+    .seci-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(1.1rem, 3vw, 1.75rem);
+      box-shadow: var(--card-shadow);
+      transition: transform 0.25s, box-shadow 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .seci-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .seci-s::before { background: var(--accent); }
+    .seci-e::before { background: #16a34a; }
+    .seci-c::before { background: #d97706; }
+    .seci-i::before { background: #dc2626; }
+    .seci-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.12); }
+    .seci-letter {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3rem); line-height: 1;
+      margin-bottom: 0.5rem; opacity: 0.15;
+      position: absolute; top: 1rem; right: 1.25rem;
+    }
+    .seci-s .seci-letter { color: var(--accent); }
+    .seci-e .seci-letter { color: #16a34a; }
+    .seci-c .seci-letter { color: #d97706; }
+    .seci-i .seci-letter { color: #dc2626; }
+    .seci-card h4 { font-size: clamp(0.95rem, 2.2vw, 1.05rem); font-weight: 700; margin-bottom: 0.25rem; color: var(--text); }
+    .seci-badge {
+      display: inline-block; font-size: 0.7rem; font-weight: 600;
+      padding: 2px 10px; border-radius: 50px; margin-bottom: 0.75rem;
+    }
+    .seci-s .seci-badge { background: rgba(26,86,219,0.1);  color: var(--accent); }
+    .seci-e .seci-badge { background: rgba(22,163,74,0.1);  color: #16a34a; }
+    .seci-c .seci-badge { background: rgba(217,119,6,0.1);  color: #d97706; }
+    .seci-i .seci-badge { background: rgba(220,38,38,0.1);  color: #dc2626; }
+    .seci-card p { font-size: clamp(0.78rem, 1.8vw, 0.85rem); color: var(--text-muted); }
+
+    /* ─── TABLA ─── */
+    .table-wrapper {
+      width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+      border-radius: 10px;
+    }
+    .conv-table { width: 100%; border-collapse: collapse; min-width: 440px; }
+    .conv-table th {
+      text-align: left; padding: 0.75rem 1rem;
+      font-size: 0.78rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .conv-table td {
+      padding: 0.875rem 1rem; font-size: clamp(0.78rem, 1.8vw, 0.875rem);
+      color: var(--text); border-bottom: 1px solid var(--border);
+    }
+    .conv-table tr:last-child td { border-bottom: none; }
+    .conv-table tr:hover td { background: var(--surface2); }
+    .conv-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 10px; border-radius: 6px;
+      font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+    }
+
+    /* ─── QUIZ ─── */
+    .quiz-wrapper {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      box-shadow: var(--card-shadow);
+      max-width: 640px; margin: 0 auto; width: 100%;
+    }
+    .quiz-header {
+      background: var(--nav-bg);
+      padding: clamp(1rem, 3vw, 1.5rem) clamp(1.25rem, 4vw, 2rem);
+      color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .quiz-header h3 { font-family: 'DM Serif Display', serif; font-size: clamp(0.95rem, 2.5vw, 1.1rem); }
+    .quiz-counter { font-size: 0.8rem; color: rgba(255,255,255,0.5); white-space: nowrap; flex-shrink: 0; }
+    .progress-bar-wrap { height: 4px; background: var(--border); width: 100%; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #60a5fa); transition: width 0.4s ease; }
+    .quiz-body { padding: clamp(1.25rem, 4vw, 2rem); }
+    .quiz-question {
+      font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+      font-weight: 600; color: var(--text);
+      margin-bottom: 1.5rem; min-height: 2.5rem;
+    }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .quiz-opt {
+      background: var(--surface2); border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 0.875rem 1.25rem;
+      cursor: pointer; font-size: clamp(0.82rem, 2vw, 0.9rem);
+      font-weight: 500; color: var(--text); text-align: left;
+      transition: all 0.18s; display: flex; align-items: center; gap: 0.75rem;
+      width: 100%;
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--accent); background: rgba(26,86,219,0.06); }
+    .quiz-opt:disabled { cursor: default; }
+    .quiz-opt .opt-icon {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid var(--border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 0.75rem;
+    }
+    .opt-correct { border-color: #16a34a !important; background: rgba(22,163,74,0.08) !important; }
+    .opt-correct .opt-icon { background: #16a34a; border-color: #16a34a; color: #fff; }
+    .opt-wrong   { border-color: #dc2626 !important; background: rgba(220,38,38,0.07) !important; }
+    .opt-wrong .opt-icon { background: #dc2626; border-color: #dc2626; color: #fff; }
+    .quiz-feedback {
+      margin-top: 1.25rem; padding: 0.875rem 1.25rem;
+      border-radius: 10px; font-size: clamp(0.78rem, 1.8vw, 0.85rem);
+      font-weight: 500; display: none; line-height: 1.5;
+    }
+    .feedback-correct { background: rgba(22,163,74,0.1);  color: #16a34a; border: 1px solid rgba(22,163,74,0.2); }
+    .feedback-wrong   { background: rgba(220,38,38,0.07); color: #dc2626; border: 1px solid rgba(220,38,38,0.15); }
+    .quiz-footer {
+      padding: clamp(0.875rem, 2.5vw, 1.25rem) clamp(1.25rem, 4vw, 2rem);
+      border-top: 1px solid var(--border); display: flex; justify-content: flex-end;
+    }
+    .btn-next {
+      background: var(--accent); color: #fff; border: none;
+      padding: 10px clamp(16px, 4vw, 24px); border-radius: 9px;
+      font-size: clamp(0.8rem, 2vw, 0.875rem); font-weight: 600;
+      cursor: pointer; display: none; transition: background 0.2s;
+      font-family: 'Sora', sans-serif;
+    }
+    .btn-next:hover { background: var(--accent2); }
+
+    .result-wrap { padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1.25rem, 4vw, 2rem); text-align: center; }
+    .result-score { font-family: 'DM Serif Display', serif; font-size: clamp(3rem, 8vw, 4.5rem); color: var(--accent); line-height: 1; margin-bottom: 0.5rem; }
+    .result-label { font-size: clamp(0.95rem, 2.5vw, 1.1rem); font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+    .result-sub   { font-size: clamp(0.8rem, 1.8vw, 0.875rem); color: var(--text-muted); margin-bottom: 2rem; }
+    .result-stars { font-size: clamp(1.5rem, 5vw, 2rem); margin-bottom: 1.5rem; }
+    .btn-retry {
+      background: var(--accent); color: #fff; border: none;
+      padding: 12px clamp(20px, 5vw, 32px); border-radius: 10px;
+      font-size: clamp(0.85rem, 2vw, 0.9rem); font-weight: 600;
+      cursor: pointer; font-family: 'Sora', sans-serif;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-retry:hover { background: var(--accent2); transform: translateY(-2px); }
+
+    /* ─── REFERENCIAS ─── */
+    .ref-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+    .ref-list li a {
+      display: flex; align-items: center; gap: 0.75rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: clamp(0.75rem, 2vw, 0.875rem) clamp(0.875rem, 3vw, 1.25rem);
+      text-decoration: none; color: var(--text);
+      font-size: clamp(0.8rem, 1.8vw, 0.875rem); font-weight: 500;
+      transition: all 0.2s; flex-wrap: wrap;
+    }
+    .ref-list li a:hover { border-color: var(--accent); color: var(--accent); transform: translateX(4px); }
+    .ref-icon { font-size: 1.1rem; color: var(--accent); flex-shrink: 0; }
+    .ref-body { flex: 1; min-width: 120px; }
+    .ref-body strong { display: block; font-weight: 700; font-size: clamp(0.8rem, 2vw, 0.875rem); }
+    .ref-body small  { font-size: 0.75rem; color: var(--text-muted); }
+    .ref-badge {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; padding: 2px 9px; border-radius: 50px;
+      white-space: nowrap;
+    }
+    .ref-badge-scholar { background: rgba(26,86,219,0.1);  color: var(--accent); }
+    .ref-badge-scopus  { background: rgba(224,92,42,0.1);  color: var(--accent-warm); }
+    .ref-badge-redalyc { background: rgba(22,163,74,0.1);  color: #16a34a; }
+    .ref-badge-dialnet { background: rgba(124,58,237,0.1); color: #7c3aed; }
+    .ref-badge-ebsco   { background: rgba(217,119,6,0.1);  color: #d97706; }
+    .ref-badge-scielo  { background: rgba(220,38,38,0.1);  color: #dc2626; }
+    .ref-arrow { font-size: 0.9rem; color: var(--text-muted); flex-shrink: 0; }
+    @media (max-width: 400px) { .ref-arrow { display: none; } }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--nav-bg);
+      padding: clamp(1.75rem, 4vw, 2.5rem) 0;
+      text-align: center; color: rgba(255,255,255,0.35);
+      font-size: clamp(0.75rem, 1.8vw, 0.82rem);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    footer span { color: rgba(255,255,255,0.55); }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a class="nav-brand" href="#">Ciclo del Conocimiento</a>
+  <div class="nav-links" id="navLinks">
+    <a href="#intro"       onclick="closeMenu()">Inicio</a>
+    <a href="#tipos"       onclick="closeMenu()">Tipos</a>
+    <a href="#seci"        onclick="closeMenu()">Modelo SECI</a>
+    <a href="#quiz"        onclick="closeMenu()">Quiz</a>
+    <a href="#referencias" onclick="closeMenu()">Referencias</a>
+    <button class="theme-btn" id="themeToggle">🌙</button>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menú" aria-expanded="false">☰</button>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="intro">
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Gestión del Conocimiento</div>
+    <h1>Transferencia y <span>Aplicación</span><br>del Conocimiento</h1>
+    <p>Descubre cómo el conocimiento fluye, se transforma y genera valor en organizaciones y equipos.</p>
+    <div class="hero-cta">
+      <a href="#tipos" class="btn-primary-custom">Explorar contenido</a>
+      <a href="#quiz"  class="btn-ghost">Hacer el quiz →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ¿QUÉ ES? ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Fundamentos</div>
+      <h2>¿Qué es la transferencia del conocimiento?</h2>
+      <p>El proceso de transmitir saberes, habilidades y resultados entre partes para su aplicación práctica e innovación.</p>
+    </div>
+
+    <div class="intro-grid reveal">
+
+      <!-- TARJETA 1: Comunicación y aprendizaje -->
+      <div class="info-card">
+        <div class="info-card-icon icon-blue"><i class="bi bi-arrow-left-right"></i></div>
+        <h4>Comunicación y aprendizaje</h4>
+        <p>La transferencia implica siempre un proceso comunicativo activo entre quien posee el conocimiento y quien lo recibe.</p>
+        <ul class="card-features">
+          <li><span class="feat-dot dot-blue"></span>Requiere un emisor y un receptor activos</li>
+          <li><span class="feat-dot dot-blue"></span>Involucra retroalimentación continua</li>
+          <li><span class="feat-dot dot-blue"></span>Se apoya en canales formales e informales</li>
+          <li><span class="feat-dot dot-blue"></span>Produce transformación en el receptor</li>
+        </ul>
+        <div class="card-divider"></div>
+        <button class="btn-ver-mas btn-ver-mas-blue" onclick="toggleExpand(this, 'expand-1')">
+          Ver más <span class="arrow">›</span>
+        </button>
+        <div class="expand-panel" id="expand-1">
+          <div class="expand-inner">
+            <h5 class="txt-blue">¿Por qué es clave la comunicación?</h5>
+            <p>La transferencia de conocimiento no ocurre de manera automática: depende de la calidad del diálogo entre las partes. El emisor debe ser capaz de articular lo que sabe, y el receptor debe estar dispuesto y preparado para recibirlo. Cuando este proceso falla, el conocimiento se pierde o se distorsiona.</p>
+            <p>El aprendizaje organizacional surge precisamente de convertir las experiencias individuales en comprensión colectiva, y eso solo es posible a través de una comunicación efectiva, estructurada y continua.</p>
+            <div class="expand-example border-blue">
+              <strong class="txt-blue">📌 Ejemplo práctico</strong>
+              Un mentor que comparte sus técnicas de resolución de problemas con un nuevo empleado, ajustando su explicación según las preguntas y reacciones del aprendiz.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA 2: Formal e informal -->
+      <div class="info-card">
+        <div class="info-card-icon icon-orange"><i class="bi bi-layers"></i></div>
+        <h4>Formal e informal</h4>
+        <p>Puede darse a través de capacitaciones y documentos formales, o de manera espontánea mediante conversaciones y experiencias compartidas.</p>
+        <ul class="card-features">
+          <li><span class="feat-dot dot-orange"></span>Capacitaciones, talleres y manuales (formal)</li>
+          <li><span class="feat-dot dot-orange"></span>Conversaciones espontáneas (informal)</li>
+          <li><span class="feat-dot dot-orange"></span>Mentorías y trabajo colaborativo</li>
+          <li><span class="feat-dot dot-orange"></span>Comunidades de práctica internas</li>
+        </ul>
+        <div class="card-divider"></div>
+        <button class="btn-ver-mas btn-ver-mas-orange" onclick="toggleExpand(this, 'expand-2')">
+          Ver más <span class="arrow">›</span>
+        </button>
+        <div class="expand-panel" id="expand-2">
+          <div class="expand-inner">
+            <h5 class="txt-orange">Canales formales vs. informales</h5>
+            <p>La transferencia formal se estructura a través de programas de capacitación, documentos, procedimientos y sistemas de gestión del conocimiento. Tiene la ventaja de ser reproducible y auditable, pero puede resultar rígida para capturar conocimiento tácito.</p>
+            <p>La transferencia informal sucede en conversaciones de pasillo, reuniones espontáneas o dinámicas de equipo. Es más ágil y natural, pero depende de las relaciones interpersonales y puede perderse si no se documenta a tiempo.</p>
+            <div class="expand-example border-orange">
+              <strong class="txt-orange">📌 Ejemplo práctico</strong>
+              Un empleado senior que explica de forma informal a un colega cómo manejar un cliente difícil, basándose en años de experiencia que no figuran en ningún manual.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA 3: Mejora el desempeño -->
+      <div class="info-card">
+        <div class="info-card-icon icon-green"><i class="bi bi-graph-up-arrow"></i></div>
+        <h4>Mejora el desempeño</h4>
+        <p>Su objetivo principal es mejorar las capacidades organizacionales y evitar la pérdida de conocimiento crítico.</p>
+        <ul class="card-features">
+          <li><span class="feat-dot dot-green"></span>Reduce curvas de aprendizaje individuales</li>
+          <li><span class="feat-dot dot-green"></span>Evita la repetición de errores pasados</li>
+          <li><span class="feat-dot dot-green"></span>Preserva el conocimiento ante rotación</li>
+          <li><span class="feat-dot dot-green"></span>Fortalece las competencias del equipo</li>
+        </ul>
+        <div class="card-divider"></div>
+        <button class="btn-ver-mas btn-ver-mas-green" onclick="toggleExpand(this, 'expand-3')">
+          Ver más <span class="arrow">›</span>
+        </button>
+        <div class="expand-panel" id="expand-3">
+          <div class="expand-inner">
+            <h5 class="txt-green">Impacto en el desempeño organizacional</h5>
+            <p>Cuando el conocimiento fluye correctamente dentro de una organización, los equipos toman mejores decisiones, resuelven problemas más rápido y reducen la dependencia de personas clave. Esto es especialmente crítico en contextos de alta rotación de personal o de expansión acelerada.</p>
+            <p>Las organizaciones que invierten en sistemas de transferencia del conocimiento reportan menor tiempo de onboarding, mayor retención de talento y una cultura más colaborativa e innovadora.</p>
+            <div class="expand-example border-green">
+              <strong class="txt-green">📌 Ejemplo práctico</strong>
+              Una empresa que documenta sus procesos clave en una wiki interna logra que los nuevos empleados alcancen productividad plena en la mitad del tiempo habitual.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA 4: Genera valor e innovación -->
+      <div class="info-card">
+        <div class="info-card-icon icon-purple"><i class="bi bi-lightbulb"></i></div>
+        <h4>Genera valor e innovación</h4>
+        <p>Convierte información técnica en impacto social o económico, facilitando la adopción de buenas prácticas.</p>
+        <ul class="card-features">
+          <li><span class="feat-dot dot-purple"></span>Transforma el saber en ventaja competitiva</li>
+          <li><span class="feat-dot dot-purple"></span>Impulsa el desarrollo de nuevos productos</li>
+          <li><span class="feat-dot dot-purple"></span>Facilita la adopción de mejores prácticas</li>
+          <li><span class="feat-dot dot-purple"></span>Conecta el conocimiento académico con el sector productivo</li>
+        </ul>
+        <div class="card-divider"></div>
+        <button class="btn-ver-mas btn-ver-mas-purple" onclick="toggleExpand(this, 'expand-4')">
+          Ver más <span class="arrow">›</span>
+        </button>
+        <div class="expand-panel" id="expand-4">
+          <div class="expand-inner">
+            <h5 class="txt-purple">Del conocimiento a la innovación</h5>
+            <p>La transferencia del conocimiento es el puente entre la investigación y la aplicación. Cuando una organización logra convertir hallazgos técnicos o científicos en procesos, productos o servicios útiles, está creando valor tangible para la sociedad y el mercado.</p>
+            <p>Este proceso es central en los modelos de innovación abierta (open innovation), donde empresas, universidades y gobiernos colaboran para acelerar la creación y difusión del conocimiento útil.</p>
+            <div class="expand-example border-purple">
+              <strong class="txt-purple">📌 Ejemplo práctico</strong>
+              Una universidad transfiere a una empresa agrícola los resultados de su investigación sobre optimización de riego, reduciendo costos operativos en un 30% y mejorando los rendimientos de cosecha.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Videos: Transferencia -->
+    <div class="videos-block reveal">
+      <div class="videos-block-header">
+        <i class="bi bi-play-circle-fill" style="color:var(--accent);font-size:0.9rem;"></i>
+        <span class="vb-label">Videos recomendados · Transferencia del conocimiento</span>
+      </div>
+      <div class="yt-grid">
+
+        <div class="yt-item">
+          <div class="yt-thumb" id="thumb-mcIWvWAy-_4">
+            <img src="https://img.youtube.com/vi/mcIWvWAy-_4/mqdefault.jpg" alt="Transferencia de Conocimientos" loading="lazy">
+            <div class="yt-play" onclick="playVideo('thumb-mcIWvWAy-_4','mcIWvWAy-_4')"><div class="yt-play-btn">▶</div></div>
+            <iframe title="Estrategias para una Educación Significativa" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          </div>
+          <div class="yt-info">
+            <span class="yt-badge badge-blue">Educación</span>
+            <p class="yt-title">Estrategias para una Educación Significativa</p>
+            <p class="yt-desc">Cómo superar el desafío de preparar a los estudiantes para transferir el conocimiento fuera del aula.</p>
+          </div>
+        </div>
+
+        <div class="yt-item">
+          <div class="yt-thumb" id="thumb-V9PBEg_ir5Y">
+            <img src="https://img.youtube.com/vi/V9PBEg_ir5Y/mqdefault.jpg" alt="Transferencia del conocimiento" loading="lazy">
+            <div class="yt-play" onclick="playVideo('thumb-V9PBEg_ir5Y','V9PBEg_ir5Y')"><div class="yt-play-btn">▶</div></div>
+            <iframe title="Transferencia del conocimiento - Canal Sur" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          </div>
+          <div class="yt-info">
+            <span class="yt-badge badge-orange">Reportaje</span>
+            <p class="yt-title">Transferencia del conocimiento — Canal Sur</p>
+            <p class="yt-desc">Reportaje sobre cómo la universidad transfiere conocimiento a la sociedad y la empresa.</p>
+          </div>
+        </div>
+
+        <div class="yt-item">
+          <div class="yt-thumb" id="thumb-EDfkc2HtPic">
+            <img src="https://img.youtube.com/vi/EDfkc2HtPic/mqdefault.jpg" alt="Webinar Transferencia de Conocimiento" loading="lazy">
+            <div class="yt-play" onclick="playVideo('thumb-EDfkc2HtPic','EDfkc2HtPic')"><div class="yt-play-btn">▶</div></div>
+            <iframe title="Webinar: Transferencia de Conocimientos y Tecnología" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          </div>
+          <div class="yt-info">
+            <span class="yt-badge badge-green">Webinar</span>
+            <p class="yt-title">Transferencia de Conocimientos y Tecnología</p>
+            <p class="yt-desc">Conceptos base para instalar una cultura de I+D+i y transferencia tecnológica en la organización.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TIPOS DE CONOCIMIENTO ═══ -->
+<section class="section section-alt" id="tipos">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Clasificación</div>
+      <h2>Tipos de conocimiento</h2>
+      <p>El conocimiento se clasifica según su facilidad de formalización y transferencia.</p>
+    </div>
+
+    <div class="tipos-grid reveal">
+      <div class="tipo-card">
+        <div class="big-icon">🧠</div>
+        <div class="tag tag-orange">Difícil de transferir</div>
+        <h3>Conocimiento Tácito</h3>
+        <p>Basado en la experiencia personal y la intuición. Difícil de expresar o documentar. Se transfiere principalmente mediante la observación y la práctica compartida.</p>
+      </div>
+      <div class="tipo-card">
+        <div class="big-icon">📄</div>
+        <div class="tag tag-blue">Fácil de compartir</div>
+        <h3>Conocimiento Explícito</h3>
+        <p>Codificado en documentos, manuales, bases de datos y procedimientos. Fácil de transmitir, almacenar y reproducir de manera sistemática.</p>
+      </div>
+    </div>
+
+    <!-- Videos: Tácito vs Explícito -->
+    <div class="videos-block reveal">
+      <div class="videos-block-header">
+        <i class="bi bi-play-circle-fill" style="color:var(--accent);font-size:0.9rem;"></i>
+        <span class="vb-label">Videos recomendados · Conocimiento tácito vs explícito</span>
+      </div>
+      <div class="yt-grid">
+
+        <div class="yt-item">
+          <div class="yt-thumb" id="thumb-s09WIh8lOHs">
+            <img src="https://img.youtube.com/vi/s09WIh8lOHs/mqdefault.jpg" alt="Tipos de Conocimiento UPB" loading="lazy">
+            <div class="yt-play" onclick="playVideo('thumb-s09WIh8lOHs','s09WIh8lOHs')"><div class="yt-play-btn">▶</div></div>
+            <iframe title="Tipos de Conocimiento - Tácito y Explícito - UPB" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          </div>
+          <div class="yt-info">
+            <span class="yt-badge badge-blue">Académico · UPB</span>
+            <p class="yt-title">Tipos de Conocimiento: Tácito y Explícito</p>
+            <p class="yt-desc">Aprende a identificar las diferencias y su relación con las nuevas tecnologías de la información.</p>
+          </div>
+        </div>
+
+        <div class="yt-item">
+          <div class="yt-thumb" id="thumb-p1_JbgZL2Hs">
+            <img src="https://img.youtube.com/vi/p1_JbgZL2Hs/mqdefault.jpg" alt="Gestión del Conocimiento Tácito y Explícito" loading="lazy">
+            <div class="yt-play" onclick="playVideo('thumb-p1_JbgZL2Hs','p1_JbgZL2Hs')"><div class="yt-play-btn">▶</div></div>
+            <iframe title="Gestión del Conocimiento Tácito y Explícito" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          </div>
+          <div class="yt-info">
+            <span class="yt-badge badge-orange">Gestión</span>
+            <p class="yt-title">Conocimiento Tácito y Explícito en la organización</p>
+            <p class="yt-desc">Tipos de conocimiento que existen y cómo gestionarlos eficazmente dentro de un equipo u organización.</p>
+          </div>
+        </div>
+
+        <div class="yt-item">
+          <div class="yt-thumb" id="thumb-6YCWT5BXA3g">
+            <img src="https://img.youtube.com/vi/6YCWT5BXA3g/mqdefault.jpg" alt="Tipos de conocimiento PMI" loading="lazy">
+            <div class="yt-play" onclick="playVideo('thumb-6YCWT5BXA3g','6YCWT5BXA3g')"><div class="yt-play-btn">▶</div></div>
+            <iframe title="Tipos de conocimiento tácito y explícito - PMI PMP" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          </div>
+          <div class="yt-info">
+            <span class="yt-badge badge-purple">Proyectos · PMI</span>
+            <p class="yt-title">Tácito y Explícito: ejemplos y gestión de proyectos</p>
+            <p class="yt-desc">Ejemplos prácticos aplicados a la gestión de proyectos y la espiral del conocimiento organizacional.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MODELO SECI ═══ -->
+<section class="section" id="seci">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Teoría de Nonaka y Takeuchi</div>
+      <h2>Modelo SECI</h2>
+      <p>Explica cómo se crea el conocimiento mediante la interacción continua entre el conocimiento tácito y explícito.</p>
+    </div>
+
+    <div class="seci-grid reveal">
+      <div class="seci-card seci-s">
+        <div class="seci-letter">S</div>
+        <div class="info-card-icon icon-blue" style="margin-bottom:0.75rem;"><i class="bi bi-people-fill"></i></div>
+        <h4>Socialización</h4>
+        <div class="seci-badge">Tácito → Tácito</div>
+        <p>Aprendizaje mediante la experiencia compartida y la observación directa. El conocimiento se transfiere sin necesidad de codificarlo, como un aprendiz que aprende de un maestro.</p>
+      </div>
+      <div class="seci-card seci-e">
+        <div class="seci-letter">E</div>
+        <div class="info-card-icon icon-green" style="margin-bottom:0.75rem;"><i class="bi bi-pencil-fill"></i></div>
+        <h4>Externalización</h4>
+        <div class="seci-badge">Tácito → Explícito</div>
+        <p>Articulación del conocimiento tácito en conceptos, metáforas o modelos. Es el proceso clave de la creación de conocimiento; convierte la experiencia en documentos reutilizables.</p>
+      </div>
+      <div class="seci-card seci-c">
+        <div class="seci-letter">C</div>
+        <div class="info-card-icon icon-orange" style="margin-bottom:0.75rem;"><i class="bi bi-diagram-3-fill"></i></div>
+        <h4>Combinación</h4>
+        <div class="seci-badge">Explícito → Explícito</div>
+        <p>Sistematización y organización de conceptos explícitos en sistemas de conocimiento. Se procesan y combinan documentos, reuniones y conversaciones para generar nuevo conocimiento.</p>
+      </div>
+      <div class="seci-card seci-i">
+        <div class="seci-letter">I</div>
+        <div class="info-card-icon icon-purple" style="margin-bottom:0.75rem;"><i class="bi bi-mortarboard-fill"></i></div>
+        <h4>Internalización</h4>
+        <div class="seci-badge">Explícito → Tácito</div>
+        <p>Aprender haciendo. El conocimiento explícito se incorpora como experiencia y habilidad personal. Los manuales y procedimientos se convierten en competencias interiorizadas.</p>
+      </div>
+    </div>
+
+    <div class="info-card reveal" style="margin-top:2rem;">
+      <h4 style="margin-bottom:0.25rem;">Tabla de conversión del conocimiento</h4>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0;">Resumen de los cuatro procesos del modelo SECI</p>
+      <div class="table-wrapper">
+        <table class="conv-table">
+          <thead>
+            <tr><th>Proceso</th><th>De</th><th>Hacia</th><th>Mecanismo</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="conv-badge" style="background:rgba(26,86,219,0.1);color:var(--accent)">Socialización</span></td>
+              <td>Tácito</td><td>Tácito</td><td>Observación, imitación, práctica conjunta</td>
+            </tr>
+            <tr>
+              <td><span class="conv-badge" style="background:rgba(22,163,74,0.1);color:#16a34a">Externalización</span></td>
+              <td>Tácito</td><td>Explícito</td><td>Metáforas, modelos, documentos</td>
+            </tr>
+            <tr>
+              <td><span class="conv-badge" style="background:rgba(217,119,6,0.1);color:#d97706">Combinación</span></td>
+              <td>Explícito</td><td>Explícito</td><td>Bases de datos, reuniones, informes</td>
+            </tr>
+            <tr>
+              <td><span class="conv-badge" style="background:rgba(220,38,38,0.1);color:#dc2626">Internalización</span></td>
+              <td>Explícito</td><td>Tácito</td><td>Aprender haciendo, simulaciones</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Videos: SECI -->
+    <div class="videos-block reveal">
+      <div class="videos-block-header">
+        <i class="bi bi-play-circle-fill" style="color:var(--accent);font-size:0.9rem;"></i>
+        <span class="vb-label">Videos recomendados · Modelo SECI</span>
+      </div>
+      <div class="yt-grid">
+
+        <div class="yt-item">
+          <div class="yt-thumb" id="thumb-A3xAxvV_AqE">
+            <img src="https://img.youtube.com/vi/A3xAxvV_AqE/mqdefault.jpg" alt="Espiral del conocimiento SECI" loading="lazy">
+            <div class="yt-play" onclick="playVideo('thumb-A3xAxvV_AqE','A3xAxvV_AqE')"><div class="yt-play-btn">▶</div></div>
+            <iframe title="Espiral del conocimiento - Modelo SECI Nonaka Takeuchi" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          </div>
+          <div class="yt-info">
+            <span class="yt-badge badge-blue">Teoría</span>
+            <p class="yt-title">Espiral del conocimiento — Modelo SECI</p>
+            <p class="yt-desc">Nonaka y Takeuchi: la espiral del conocimiento organizacional explicada con ejemplos concretos.</p>
+          </div>
+        </div>
+
+        <div class="yt-item">
+          <div class="yt-thumb" id="thumb-YqKtka1iajs">
+            <img src="https://img.youtube.com/vi/YqKtka1iajs/mqdefault.jpg" alt="Modelo Nonaka Takeuchi universidad" loading="lazy">
+            <div class="yt-play" onclick="playVideo('thumb-YqKtka1iajs','YqKtka1iajs')"><div class="yt-play-btn">▶</div></div>
+            <iframe title="Gestión del Conocimiento - Modelo Nonaka y Takeuchi - UCAB" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          </div>
+          <div class="yt-info">
+            <span class="yt-badge badge-green">Universidad · UCAB</span>
+            <p class="yt-title">Modelo Nonaka & Takeuchi — visión universitaria</p>
+            <p class="yt-desc">Explicación académica del modelo aplicado a la gestión del conocimiento en organizaciones.</p>
+          </div>
+        </div>
+
+        <div class="yt-item">
+          <div class="yt-thumb" id="thumb-sY9duhkKQhA">
+            <img src="https://img.youtube.com/vi/sY9duhkKQhA/mqdefault.jpg" alt="Modelo SECI explicativo" loading="lazy">
+            <div class="yt-play" onclick="playVideo('thumb-sY9duhkKQhA','sY9duhkKQhA')"><div class="yt-play-btn">▶</div></div>
+            <iframe title="Modelo SECI - Video explicativo" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          </div>
+          <div class="yt-info">
+            <span class="yt-badge badge-orange">Explicativo</span>
+            <p class="yt-title">Modelo SECI — Video explicativo completo</p>
+            <p class="yt-desc">Recorre cada etapa del modelo SECI con ejemplos prácticos de conversión del conocimiento.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ QUIZ ═══ -->
+<section class="section section-alt" id="quiz">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Evaluación</div>
+      <h2>Quiz Interactivo</h2>
+      <p>Pon a prueba lo que aprendiste sobre gestión y transferencia del conocimiento.</p>
+    </div>
+
+    <div class="quiz-wrapper reveal">
+      <div id="quizMain">
+        <div class="quiz-header">
+          <h3>Evaluación de conocimientos</h3>
+          <span class="quiz-counter" id="quizCounter">1 / 10</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="quizBar" style="width:0%"></div>
+        </div>
+        <div class="quiz-body">
+          <div class="quiz-question" id="quizQuestion"></div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div class="quiz-feedback" id="quizFeedback"></div>
+        </div>
+        <div class="quiz-footer">
+          <button class="btn-next" id="btnNext" onclick="nextQuestion()">Siguiente pregunta →</button>
+        </div>
+      </div>
+      <div id="quizResult" style="display:none;">
+        <div class="result-wrap">
+          <div class="result-stars" id="resultStars"></div>
+          <div class="result-score" id="resultScore"></div>
+          <div class="result-label" id="resultLabel"></div>
+          <div class="result-sub"   id="resultSub"></div>
+          <button class="btn-retry" onclick="restartQuiz()">Intentar de nuevo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ REFERENCIAS ═══ -->
+<section class="section" id="referencias">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Fuentes académicas</div>
+      <h2>Referencias Bibliográficas</h2>
+      <p>Busca artículos, libros y revistas científicas sobre gestión y transferencia del conocimiento en las principales bases de datos académicas.</p>
+    </div>
+    <ul class="ref-list reveal" style="max-width:680px;margin:0 auto;">
+      <li>
+        <a href="https://scholar.google.com/scholar?q=gesti%C3%B3n+del+conocimiento+transferencia+organizacional" target="_blank" rel="noopener">
+          <i class="bi bi-mortarboard ref-icon"></i>
+          <span class="ref-body"><strong>Google Scholar</strong><small>Busca artículos académicos sobre "gestión del conocimiento" y transferencia organizacional</small></span>
+          <span class="ref-badge ref-badge-scholar">Artículos</span>
+          <i class="bi bi-arrow-right ref-arrow"></i>
+        </a>
+      </li>
+      <li>
+        <a href="https://dialnet.unirioja.es/buscar/documentos?querysDismax.DOCUMENTAL_TODO=tranferencia%20del%20conocimiento&filtros.DOCUMENTAL_FACET_ENTIDAD=artrev" target="_blank" rel="noopener">
+          <i class="bi bi-journal-text ref-icon"></i>
+          <span class="ref-body"><strong>Dialnet</strong><small>Base de datos multidisciplinar — busca "knowledge management transfer"</small></span>
+          <span class="ref-badge ref-badge-scopus">Revistas indexadas</span>
+          <i class="bi bi-arrow-right ref-arrow"></i>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.redalyc.org/busquedaArticuloFiltros.oa?q=gesti%C3%B3n+del+conocimiento&tipo=1" target="_blank" rel="noopener">
+          <i class="bi bi-globe-americas ref-icon"></i>
+          <span class="ref-body"><strong>Redalyc</strong><small>Revistas científicas en español — busca artículos sobre gestión del conocimiento</small></span>
+          <span class="ref-badge ref-badge-redalyc">Español · Iberoamérica</span>
+          <i class="bi bi-arrow-right ref-arrow"></i>
+        </a>
+      </li>
+      <li>
+        <a href="https://dialnet.unirioja.es/buscar/documentos?querysDismax.DOCUMENTAL_TODO=gesti%C3%B3n+del+conocimiento" target="_blank" rel="noopener">
+          <i class="bi bi-book ref-icon"></i>
+          <span class="ref-body"><strong>Dialnet</strong><small>Producción científica hispana — libros, tesis y artículos sobre el tema</small></span>
+          <span class="ref-badge ref-badge-dialnet">Libros y tesis</span>
+          <i class="bi bi-arrow-right ref-arrow"></i>
+        </a>
+      </li>
+      <li>
+        <a href="https://scholar.google.com/scholar?hl=es&as_sdt=0%2C5&q=modelo+seci+gesti%C3%B3n+del+conocimiento" target="_blank" rel="noopener">
+          <i class="bi bi-database ref-icon"></i>
+          <span class="ref-body"><strong>EBSCO Business Source</strong><small>Búsqueda de literatura sobre knowledge management y modelo SECI</small></span>
+          <span class="ref-badge ref-badge-ebsco">Negocios y gestión</span>
+          <i class="bi bi-arrow-right ref-arrow"></i>
+        </a>
+      </li>
+      <li>
+        <a href="https://search.scielo.org/?q=*:*&lang=pt&count=15&from=0&output=site&sort=&format=summary&fb=&page=1" target="_blank" rel="noopener">
+          <i class="bi bi-journal-richtext ref-icon"></i>
+          <span class="ref-body"><strong>SciELO</strong><small>Revistas latinoamericanas de administración y gestión del conocimiento</small></span>
+          <span class="ref-badge ref-badge-scielo">América Latina</span>
+          <i class="bi bi-arrow-right ref-arrow"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="container">
+    <p style="margin-bottom:0.25rem;"><span>Ciclo del Conocimiento</span> — Gestión, transferencia y aplicación del conocimiento</p>
+    <p>Basado en el trabajo de <span>Nonaka & Takeuchi</span> · Modelo SECI</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  /* ── THEME ── */
+  const html     = document.documentElement;
+  const themeBtn = document.getElementById('themeToggle');
+  const saved    = localStorage.getItem('theme') || 'light';
+  html.setAttribute('data-theme', saved);
+  themeBtn.textContent = saved === 'dark' ? '☀️' : '🌙';
+  themeBtn.onclick = () => {
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    themeBtn.textContent = next === 'dark' ? '☀️' : '🌙';
+    localStorage.setItem('theme', next);
+  };
+
+  /* ── MOBILE NAV ── */
+  const navLinks  = document.getElementById('navLinks');
+  const hamburger = document.getElementById('hamburger');
+
+  function toggleMenu() {
+    const isOpen = navLinks.classList.toggle('open');
+    hamburger.textContent = isOpen ? '✕' : '☰';
+    hamburger.setAttribute('aria-expanded', isOpen);
+  }
+  function closeMenu() {
+    navLinks.classList.remove('open');
+    hamburger.textContent = '☰';
+    hamburger.setAttribute('aria-expanded', 'false');
+  }
+  document.addEventListener('click', e => {
+    if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) closeMenu();
+  });
+
+  /* ── SCROLL REVEAL ── */
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.1 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ── YOUTUBE INLINE PLAY ── */
+  function playVideo(thumbId, videoId) {
+    const thumb = document.getElementById(thumbId);
+    if (!thumb || thumb.classList.contains('playing')) return;
+    const iframe = thumb.querySelector('iframe');
+    iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0';
+    thumb.classList.add('playing');
+  }
+
+  /* ── VER MÁS / EXPANDIR ── */
+  function toggleExpand(btn, panelId) {
+    const panel = document.getElementById(panelId);
+    const isOpen = panel.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    btn.querySelector('.arrow').textContent = isOpen ? '›' : '›';
+    // Encuentra el texto del span
+    const textNode = btn.childNodes[0];
+    if (textNode && textNode.nodeType === 3) {
+      textNode.textContent = isOpen ? 'Ver menos ' : 'Ver más ';
+    }
+  }
+
+  /* ── QUIZ ── */
+  const preguntas = [
+    { texto: "¿Qué tipo de conocimiento es difícil de formalizar o documentar?", opciones: ["Conocimiento explícito","Conocimiento tácito"], correcta: 1, explicacion: "El conocimiento tácito está basado en la experiencia personal e intuición, lo que lo hace difícil de expresar o codificar en documentos." },
+    { texto: "¿Qué proceso del modelo SECI convierte el conocimiento tácito en explícito?", opciones: ["Externalización","Socialización"], correcta: 0, explicacion: "La Externalización articula el conocimiento tácito en conceptos, modelos o documentos que pueden ser compartidos." },
+    { texto: "¿Qué proceso del modelo SECI implica 'aprender haciendo'?", opciones: ["Combinación","Internalización"], correcta: 1, explicacion: "La Internalización convierte el conocimiento explícito en tácito: el individuo incorpora manuales como habilidades propias al practicarlos." },
+    { texto: "¿En qué soporte se encuentra principalmente el conocimiento explícito?", opciones: ["Experiencia personal","Manuales y bases de datos"], correcta: 1, explicacion: "El conocimiento explícito está codificado en documentos, manuales y bases de datos formales, lo que facilita su distribución." },
+    { texto: "¿Cuál es el proceso tácito a tácito dentro del modelo SECI?", opciones: ["Socialización","Combinación"], correcta: 0, explicacion: "La Socialización transfiere conocimiento tácito entre personas mediante observación directa, imitación y práctica conjunta." },
+    { texto: "¿Cuál es el objetivo principal de la transferencia del conocimiento?", opciones: ["Guardar información sin usarla","Aplicar el conocimiento para generar valor"], correcta: 1, explicacion: "La transferencia busca que el conocimiento sea aplicado para mejorar el desempeño, impulsar la innovación y crear valor." },
+    { texto: "¿En qué se basa principalmente el conocimiento tácito?", opciones: ["Experiencia e intuición personal","Documentos formales escritos"], correcta: 0, explicacion: "El conocimiento tácito reside en la experiencia y la intuición del individuo, por lo que es difícil transmitirlo con documentos." },
+    { texto: "¿Qué proceso del modelo SECI organiza y sistematiza información explícita existente?", opciones: ["Combinación","Internalización"], correcta: 0, explicacion: "La Combinación procesa y combina conocimientos explícitos de distintas fuentes para generar nuevo conocimiento estructurado." },
+    { texto: "¿Qué proceso convierte el conocimiento explícito en tácito?", opciones: ["Internalización","Externalización"], correcta: 0, explicacion: "La Internalización es la absorción del conocimiento explícito como experiencia propia mediante la práctica." },
+    { texto: "¿Qué implica principalmente el proceso de Socialización?", opciones: ["Leer documentos técnicos","Aprender observando y practicando con otros"], correcta: 1, explicacion: "La Socialización comparte experiencias directamente: mentorías, trabajo en equipo donde el conocimiento fluye sin codificarse." }
+  ];
+
+  let indice = 0, puntaje = 0, respondida = false;
+  let preguntasMezcladas = [...preguntas].sort(() => Math.random() - 0.5);
+
+  function cargarPregunta() {
+    respondida = false;
+    const total = preguntasMezcladas.length;
+    const p = preguntasMezcladas[indice];
+    document.getElementById('quizCounter').textContent = `${indice + 1} / ${total}`;
+    document.getElementById('quizBar').style.width = `${(indice / total) * 100}%`;
+    document.getElementById('quizQuestion').textContent = p.texto;
+    const optDiv = document.getElementById('quizOptions');
+    optDiv.innerHTML = '';
+    p.opciones.forEach((op, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-opt';
+      btn.innerHTML = `<span class="opt-icon"></span>${op}`;
+      btn.onclick = () => responder(i, btn);
+      optDiv.appendChild(btn);
+    });
+    const fb = document.getElementById('quizFeedback');
+    fb.style.display = 'none'; fb.className = 'quiz-feedback';
+    document.getElementById('btnNext').style.display = 'none';
+  }
+
+  function responder(i, btn) {
+    if (respondida) return;
+    respondida = true;
+    const p = preguntasMezcladas[indice];
+    const botones = document.querySelectorAll('.quiz-opt');
+    botones.forEach(b => b.disabled = true);
+    const fb   = document.getElementById('quizFeedback');
+    const icon = btn.querySelector('.opt-icon');
+    if (i === p.correcta) {
+      btn.classList.add('opt-correct'); icon.textContent = '✓'; puntaje++;
+      fb.textContent = '✓ ¡Correcto! ' + p.explicacion;
+      fb.className   = 'quiz-feedback feedback-correct';
+    } else {
+      btn.classList.add('opt-wrong'); icon.textContent = '✗';
+      const cb = botones[p.correcta];
+      cb.classList.add('opt-correct'); cb.querySelector('.opt-icon').textContent = '✓';
+      fb.textContent = '✗ Incorrecto. ' + p.explicacion;
+      fb.className   = 'quiz-feedback feedback-wrong';
+    }
+    fb.style.display = 'block';
+    const nextBtn = document.getElementById('btnNext');
+    nextBtn.textContent = indice === preguntasMezcladas.length - 1 ? 'Ver resultado →' : 'Siguiente pregunta →';
+    nextBtn.style.display = 'block';
+  }
+
+  function nextQuestion() {
+    indice++;
+    if (indice < preguntasMezcladas.length) { cargarPregunta(); } else { mostrarResultado(); }
+  }
+
+  function mostrarResultado() {
+    document.getElementById('quizBar').style.width = '100%';
+    document.getElementById('quizMain').style.display   = 'none';
+    document.getElementById('quizResult').style.display = 'block';
+    const total  = preguntasMezcladas.length;
+    const pct    = puntaje / total;
+    const niveles = [
+      [0.4,  '⭐',       'Nivel Inicial',   'Sigue estudiando los conceptos. ¡Puedes mejorar!'],
+      [0.6,  '⭐⭐',     'Nivel Básico',    'Buen comienzo. Repasa el modelo SECI para reforzar.'],
+      [0.8,  '⭐⭐⭐',   'Nivel Alto',      '¡Muy bien! Tienes un sólido dominio del tema.'],
+      [1.01, '⭐⭐⭐⭐', 'Nivel Superior',  '¡Excelente! Dominas la gestión del conocimiento.']
+    ];
+    const [, stars, label, sub] = niveles.find(([max]) => pct <= max);
+    document.getElementById('resultStars').textContent = stars;
+    document.getElementById('resultScore').textContent = `${puntaje}/${total}`;
+    document.getElementById('resultLabel').textContent = label;
+    document.getElementById('resultSub').textContent   = sub;
+  }
+
+  function restartQuiz() {
+    indice = 0; puntaje = 0;
+    preguntasMezcladas = [...preguntas].sort(() => Math.random() - 0.5);
+    document.getElementById('quizResult').style.display = 'none';
+    document.getElementById('quizMain').style.display   = 'block';
+    cargarPregunta();
+  }
+
+  cargarPregunta();
+</script>
+</body>
+</html>
